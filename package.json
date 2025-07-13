@@ -3,6 +3,15 @@
   "version": "1.0.0",
   "description": "Remnawave API integration",
   "main": "dist/index.js",
+  "license": "MIT",
+  "author": "ChillPad VPN <info@chillpad.club>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chillpadclub/n8n-nodes-remnawave"
+  },
+  "files": [
+    "dist"
+  ],
   "n8n": {
     "credentials": [
       "credentials/RemnawaveApi.credentials.ts"
