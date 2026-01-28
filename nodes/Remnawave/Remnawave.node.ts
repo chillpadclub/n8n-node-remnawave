@@ -278,15 +278,15 @@ export class Remnawave implements INodeType {
 						const returnAll = this.getNodeParameter('returnAll', i, false) as boolean;
 						const start = this.getNodeParameter('start', i, 0) as number;
 
-						const queryParams = new URLSearchParams();
-						queryParams.append('start', start.toString());
+						const queryParams: string[] = [];
+						queryParams.push(`start=${start}`);
 
 						if (!returnAll) {
 							const limit = this.getNodeParameter('limit', i, 50) as number;
-							queryParams.append('size', limit.toString());
+							queryParams.push(`size=${limit}`);
 						}
 
-						url = `${apiUrl}/users?${queryParams.toString()}`;
+						url = `${apiUrl}/users?${queryParams.join('&')}`;
 
 					} else if (operation === 'deleteUser') {
 						const userUuid = this.getNodeParameter('userUuid', i) as string;
