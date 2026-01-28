@@ -116,6 +116,25 @@ export class Remnawave implements INodeType {
 				},
 			},
 
+			// Identifier Type - for updateUser
+			{
+				displayName: 'Identifier Type',
+				name: 'identifierType',
+				type: 'options',
+				options: [
+					{ name: 'UUID', value: 'uuid' },
+					{ name: 'Username', value: 'username' },
+				],
+				default: 'uuid',
+				description: 'Type of identifier to use for locating the user',
+				displayOptions: {
+					show: {
+						resource: ['users'],
+						operation: ['updateUser'],
+					},
+				},
+			},
+
 			// Identifier Value - for getUser
 			{
 				displayName: 'Identifier Value',
@@ -127,7 +146,7 @@ export class Remnawave implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['users'],
-						operation: ['getUser'],
+						operation: ['getUser', 'updateUser'],
 					},
 				},
 			},
