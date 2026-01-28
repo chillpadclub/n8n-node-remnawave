@@ -21,7 +21,8 @@
     ]
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc && npm run copy:icons",
+    "copy:icons": "node -e \"require('fs').cpSync('nodes', 'dist/nodes', {recursive: true, filter: (src) => src.endsWith('.png') || src.endsWith('.svg')})\""
   },
   "devDependencies": {
     "n8n-workflow": "^1.82.0",
