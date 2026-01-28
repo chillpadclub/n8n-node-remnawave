@@ -94,7 +94,45 @@ export class Remnawave implements INodeType {
 
 			// ==================== Users Parameters ====================
 
-			// User UUID - shared parameter for multiple operations
+			// Identifier Type - for getUser
+			{
+				displayName: 'Identifier Type',
+				name: 'identifierType',
+				type: 'options',
+				options: [
+					{ name: 'UUID', value: 'uuid' },
+					{ name: 'ID', value: 'id' },
+					{ name: 'Username', value: 'username' },
+					{ name: 'Telegram ID', value: 'telegram-id' },
+					{ name: 'Email', value: 'email' },
+				],
+				default: 'uuid',
+				description: 'Type of identifier to use for locating the user',
+				displayOptions: {
+					show: {
+						resource: ['users'],
+						operation: ['getUser'],
+					},
+				},
+			},
+
+			// Identifier Value - for getUser
+			{
+				displayName: 'Identifier Value',
+				name: 'identifierValue',
+				type: 'string',
+				default: '',
+				required: true,
+				description: 'Value of the identifier',
+				displayOptions: {
+					show: {
+						resource: ['users'],
+						operation: ['getUser'],
+					},
+				},
+			},
+
+			// User UUID - shared parameter for operations that need UUID
 			{
 				displayName: 'User UUID',
 				name: 'userUuid',
@@ -105,7 +143,7 @@ export class Remnawave implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['users'],
-						operation: ['getUser', 'updateUser', 'deleteUser', 'revokeSubscription', 'disableUser', 'enableUser', 'resetTraffic'],
+						operation: ['updateUser', 'deleteUser', 'revokeSubscription', 'disableUser', 'enableUser', 'resetTraffic'],
 					},
 				},
 			},
@@ -294,9 +332,13 @@ export class Remnawave implements INodeType {
 						url = `${apiUrl}/users/${userUuid}`;
 
 					} else if (operation === 'getUser') {
-						const userUuid = this.getNodeParameter('userUuid', i) as string;
+						const identifierType = this.getNodeParameter('identifierType', i) as string;
+						const identifierValue = this.getNodeParameter('identifierValue', i) as string;
+
 						method = 'GET';
-						url = `${apiUrl}/users/${userUuid}`;
+						url = identifierType === 'uuid'
+							? `${apiUrl}/users/${identifierValue}`
+							: `${apiUrl}/users/by-${identifierType}/${identifierValue}`;
 
 					} else if (operation === 'revokeSubscription') {
 						const userUuid = this.getNodeParameter('userUuid', i) as string;
