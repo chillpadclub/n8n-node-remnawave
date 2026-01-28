@@ -110,9 +110,10 @@ export class Remnawave implements INodeType {
 			},
 		},
 		options: [
-			{ name: 'encryptHappLink', value: 'encryptHappLink' },
+			{ name: 'encryptHappLinkFromRW', value: 'encryptHappLinkFromRW', description: 'Encrypt Happ link using Remnawave API (Crypt3)' },
+		{ name: 'encryptHappLinkFromHapp', value: 'encryptHappLinkFromHapp', description: 'Encrypt Happ link directly via Happ API (Crypt5)' },
 		],
-		default: 'encryptHappLink',
+		default: 'encryptHappLinkFromRW',
 		required: true,
 	},
 			// ==================== Users Parameters ====================
@@ -378,7 +379,7 @@ export class Remnawave implements INodeType {
 			displayOptions: {
 				show: {
 					resource: ['system'],
-					operation: ['encryptHappLink'],
+					operation: ['encryptHappLinkFromRW', 'encryptHappLinkFromHapp'],
 				},
 			},
 		},
@@ -542,11 +543,17 @@ export class Remnawave implements INodeType {
 			} else if (resource === 'system') {
 				// ==================== System Operations ====================
 
-				if (operation === 'encryptHappLink') {
+				if (operation === 'encryptHappLinkFromRW') {
 					const linkToEncrypt = this.getNodeParameter('linkToEncrypt', i) as string;
 					method = 'POST';
 					url = `${apiUrl}/system/tools/happ/encrypt`;
 					body = { linkToEncrypt };
+
+				} else if (operation === 'encryptHappLinkFromHapp') {
+					const linkToEncrypt = this.getNodeParameter('linkToEncrypt', i) as string;
+					method = 'POST';
+					url = 'https://crypto.happ.su/api-v2.php';
+					body = { url: linkToEncrypt };
 
 				} else {
 					throw new Error(`Unknown system operation: ${operation}`);
