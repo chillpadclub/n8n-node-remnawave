@@ -40,6 +40,10 @@ export class Remnawave implements INodeType {
 						name: 'HWID',
 						value: 'hwid',
 					},
+				{
+					name: 'System',
+					value: 'system',
+				},
 				],
 				default: 'users',
 				required: true,
@@ -83,15 +87,34 @@ export class Remnawave implements INodeType {
 					},
 				},
 				options: [
+					{ name: 'Create User HWID', value: 'createUserHWID' },
 					{ name: 'Get User HWID', value: 'getUserHWID' },
 					{ name: 'Delete HWID', value: 'deleteHWID' },
 					{ name: 'Delete All User HWID', value: 'deleteAllUserHWID' },
 					{ name: 'Get All HWID', value: 'getAllHWID' },
 				],
-				default: 'getUserHWID',
+				default: 'createUserHWID',
 				required: true,
 			},
 
+
+	// ==================== System Operations ====================
+	{
+		displayName: 'Operation',
+		name: 'operation',
+		type: 'options',
+		noDataExpression: true,
+		displayOptions: {
+			show: {
+				resource: ['system'],
+			},
+		},
+		options: [
+			{ name: 'Encrypt Happ Crypto Link', value: 'encryptHappLink' },
+		],
+		default: 'encryptHappLink',
+		required: true,
+	},
 			// ==================== Users Parameters ====================
 
 			// Identifier Type - for getUser
@@ -260,27 +283,105 @@ export class Remnawave implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['hwid'],
-						operation: ['getUserHWID', 'deleteHWID', 'deleteAllUserHWID'],
+						operation: ['createUserHWID', 'getUserHWID', 'deleteHWID', 'deleteAllUserHWID'],
 					},
 				},
 			},
 
-			// HWID - for deleteHWID
+			// HWID - for createUserHWID and deleteHWID
 			{
 				displayName: 'HWID',
 				name: 'hwid',
 				type: 'string',
 				default: '',
 				required: true,
-				description: 'HWID of the device to delete',
+				description: 'HWID of the device',
 				displayOptions: {
 					show: {
 						resource: ['hwid'],
-						operation: ['deleteHWID'],
+						operation: ['createUserHWID', 'deleteHWID'],
 					},
 				},
 			},
 
+			// Platform - for createUserHWID
+			{
+				displayName: 'Platform',
+				name: 'platform',
+				type: 'string',
+				default: '',
+				description: 'Platform of the device (e.g., Windows, Linux, MacOS)',
+				displayOptions: {
+					show: {
+						resource: ['hwid'],
+						operation: ['createUserHWID'],
+					},
+				},
+			},
+
+			// OS Version - for createUserHWID
+			{
+				displayName: 'OS Version',
+				name: 'osVersion',
+				type: 'string',
+				default: '',
+				description: 'Operating system version',
+				displayOptions: {
+					show: {
+						resource: ['hwid'],
+						operation: ['createUserHWID'],
+					},
+				},
+			},
+
+			// Device Model - for createUserHWID
+			{
+				displayName: 'Device Model',
+				name: 'deviceModel',
+				type: 'string',
+				default: '',
+				description: 'Model of the device',
+				displayOptions: {
+					show: {
+						resource: ['hwid'],
+						operation: ['createUserHWID'],
+					},
+				},
+			},
+
+			// User Agent - for createUserHWID
+			{
+				displayName: 'User Agent',
+				name: 'userAgent',
+				type: 'string',
+				default: '',
+				description: 'User agent string',
+				displayOptions: {
+					show: {
+						resource: ['hwid'],
+						operation: ['createUserHWID'],
+					},
+				},
+			},
+
+
+		// ==================== System Parameters ====================
+
+		// Link to Encrypt - for encryptHappLink
+		{
+			displayName: 'Link to Encrypt',
+			name: 'linkToEncrypt',
+			type: 'string',
+			default: '',
+			required: true,
+			description: 'The Happ crypto link URL to encrypt',
+			displayOptions: {
+				show: {
+					resource: ['system'],
+					operation: ['encryptHappLink'],
+				},
+			},
+		},
 		],
 	};
 
@@ -394,7 +495,26 @@ export class Remnawave implements INodeType {
 				} else if (resource === 'hwid') {
 					// ==================== HWID Operations ====================
 
-					if (operation === 'getUserHWID') {
+					if (operation === 'createUserHWID') {
+						const userUuid = this.getNodeParameter('userUuid', i) as string;
+						const hwid = this.getNodeParameter('hwid', i) as string;
+						const platform = this.getNodeParameter('platform', i, '') as string;
+						const osVersion = this.getNodeParameter('osVersion', i, '') as string;
+						const deviceModel = this.getNodeParameter('deviceModel', i, '') as string;
+						const userAgent = this.getNodeParameter('userAgent', i, '') as string;
+
+						method = 'POST';
+						url = `${apiUrl}/hwid/devices`;
+						body = {
+							userUuid,
+							hwid,
+							platform,
+							osVersion,
+							deviceModel,
+							userAgent,
+						};
+
+					} else if (operation === 'getUserHWID') {
 						const userUuid = this.getNodeParameter('userUuid', i) as string;
 						method = 'GET';
 						url = `${apiUrl}/hwid/devices/${userUuid}`;
@@ -418,6 +538,19 @@ export class Remnawave implements INodeType {
 					} else {
 						throw new Error(`Unknown hwid operation: ${operation}`);
 					}
+
+			} else if (resource === 'system') {
+				// ==================== System Operations ====================
+
+				if (operation === 'encryptHappLink') {
+					const linkToEncrypt = this.getNodeParameter('linkToEncrypt', i) as string;
+					method = 'POST';
+					url = `${apiUrl}/system/tools/happ/encrypt`;
+					body = { linkToEncrypt };
+
+				} else {
+					throw new Error(`Unknown system operation: ${operation}`);
+				}
 
 				} else {
 					throw new Error(`Unknown resource: ${resource}`);
