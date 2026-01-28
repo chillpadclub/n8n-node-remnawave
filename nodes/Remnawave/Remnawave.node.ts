@@ -27,138 +27,199 @@ export class Remnawave implements INodeType {
 		],
 		properties: [
 			{
-				displayName: 'Action',
-				name: 'action',
+				displayName: 'Resource',
+				name: 'resource',
 				type: 'options',
+				noDataExpression: true,
+				options: [
+					{
+						name: 'Users',
+						value: 'users',
+					},
+					{
+						name: 'HWID',
+						value: 'hwid',
+					},
+				],
+				default: 'users',
+				required: true,
+			},
+
+			// ==================== Users Operations ====================
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['users'],
+					},
+				},
 				options: [
 					{ name: 'Create User', value: 'createUser' },
-					{ name: 'Get Users', value: 'getUsers' },
-					{ name: 'Check User', value: 'checkUser' },
 					{ name: 'Update User', value: 'updateUser' },
+					{ name: 'Get All Users', value: 'getAllUsers' },
 					{ name: 'Delete User', value: 'deleteUser' },
-					{ name: 'Get HWID', value: 'getHWID' },
-					{ name: 'Delete HWID', value: 'deleteHWID' },
+					{ name: 'Get User', value: 'getUser' },
 					{ name: 'Revoke Subscription', value: 'revokeSubscription' },
+					{ name: 'Disable User', value: 'disableUser' },
+					{ name: 'Enable User', value: 'enableUser' },
+					{ name: 'Reset User Traffic', value: 'resetTraffic' },
 				],
 				default: 'createUser',
 				required: true,
 			},
 
+			// ==================== HWID Operations ====================
 			{
-			  displayName: 'User UUID',
-			  name: 'revokeUuid',
-			  type: 'string',
-			  default: '',
-			  required: true,
-			  description: 'UUID of the user to revoke subscription for',
-			  displayOptions: {
-			    show: {
-			      action: ['revokeSubscription'],
-			    },
-			  },
-			},
-
-			// Для checkUser и deleteUser
-			{
-				displayName: 'Identifier Type',
-				name: 'identifierType',
+				displayName: 'Operation',
+				name: 'operation',
 				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['hwid'],
+					},
+				},
 				options: [
-					{ name: 'UUID', value: 'uuid' },
-					{ name: 'Short UUID', value: 'short-uuid' },
-					{ name: 'Username', value: 'username' },
-					{ name: 'Telegram ID', value: 'telegram-id' },
-					{ name: 'Email', value: 'email' },
+					{ name: 'Get User HWID', value: 'getUserHWID' },
+					{ name: 'Delete HWID', value: 'deleteHWID' },
+					{ name: 'Delete All User HWID', value: 'deleteAllUserHWID' },
+					{ name: 'Get All HWID', value: 'getAllHWID' },
 				],
-				default: 'uuid',
-				description: 'Type of identifier used to locate the user',
-				displayOptions: {
-					show: {
-						action: ['checkUser'],
-					},
-				},
-			},
-			{
-				displayName: 'Identifier',
-				name: 'identifierValue',
-				type: 'string',
-				default: '',
+				default: 'getUserHWID',
 				required: true,
-				description: 'UUID or other identifier of the user',
-				displayOptions: {
-					show: {
-						action: ['checkUser'],
-					},
-				},
-			},
-			{
-				displayName: 'User UUID',
-				name: 'identifierValue',
-				type: 'string',
-				default: '',
-				required: true,
-				description: 'UUID пользователя для удаления',
-				displayOptions: {
-					show: {
-						action: ['deleteUser'],
-					},
-				},
-			},
-			// Для updateUser
-			{
-				displayName: 'User UUID',
-				name: 'updateUuid',
-				type: 'string',
-				default: '',
-				required: true,
-				description: 'UUID of the user to update',
-				displayOptions: {
-					show: {
-						action: ['updateUser'],
-					},
-				},
-			},
-			// Для updateUser и createUser
-			{
-				displayName: 'Update Fields',
-				name: 'updateFields',
-				type: 'json',
-				default: '{}',
-				required: true,
-				description: 'JSON object with user fields to create or update',
-				displayOptions: {
-					show: {
-						action: ['updateUser', 'createUser'],
-					},
-				},
 			},
 
-			// Для обоих действий нужен userUuid
+			// ==================== Users Parameters ====================
+
+			// User UUID - shared parameter for multiple operations
 			{
 				displayName: 'User UUID',
 				name: 'userUuid',
 				type: 'string',
 				default: '',
 				required: true,
-				description: 'UUID пользователя',
+				description: 'UUID of the user',
 				displayOptions: {
 					show: {
-						action: ['getHWID', 'deleteHWID'],
+						resource: ['users'],
+						operation: ['getUser', 'updateUser', 'deleteUser', 'revokeSubscription', 'disableUser', 'enableUser', 'resetTraffic'],
 					},
 				},
 			},
 
-			// Для deleteHWID — нужен ещё hwid
+			// User Data - for createUser
+			{
+				displayName: 'User Data',
+				name: 'userData',
+				type: 'json',
+				default: '{}',
+				required: true,
+				description: 'JSON object with user fields to create',
+				displayOptions: {
+					show: {
+						resource: ['users'],
+						operation: ['createUser'],
+					},
+				},
+			},
+
+			// Update Data - for updateUser
+			{
+				displayName: 'Update Data',
+				name: 'updateData',
+				type: 'json',
+				default: '{}',
+				required: true,
+				description: 'JSON object with user fields to update',
+				displayOptions: {
+					show: {
+						resource: ['users'],
+						operation: ['updateUser'],
+					},
+				},
+			},
+
+			// Pagination - for getAllUsers
+			{
+				displayName: 'Return All',
+				name: 'returnAll',
+				type: 'boolean',
+				default: false,
+				description: 'Whether to return all results or only up to a given limit',
+				displayOptions: {
+					show: {
+						resource: ['users'],
+						operation: ['getAllUsers'],
+					},
+				},
+			},
+			{
+				displayName: 'Limit',
+				name: 'limit',
+				type: 'number',
+				default: 50,
+				description: 'Max number of results to return',
+				typeOptions: {
+					minValue: 1,
+				},
+				displayOptions: {
+					show: {
+						resource: ['users'],
+						operation: ['getAllUsers'],
+						returnAll: [false],
+					},
+				},
+			},
+			{
+				displayName: 'Start',
+				name: 'start',
+				type: 'number',
+				default: 0,
+				description: 'Offset for pagination (number of records to skip)',
+				typeOptions: {
+					minValue: 0,
+				},
+				displayOptions: {
+					show: {
+						resource: ['users'],
+						operation: ['getAllUsers'],
+					},
+				},
+			},
+
+			// ==================== HWID Parameters ====================
+
+			// User UUID - shared parameter for HWID operations
+			{
+				displayName: 'User UUID',
+				name: 'userUuid',
+				type: 'string',
+				default: '',
+				required: true,
+				description: 'UUID of the user',
+				displayOptions: {
+					show: {
+						resource: ['hwid'],
+						operation: ['getUserHWID', 'deleteHWID', 'deleteAllUserHWID'],
+					},
+				},
+			},
+
+			// HWID - for deleteHWID
 			{
 				displayName: 'HWID',
 				name: 'hwid',
 				type: 'string',
 				default: '',
 				required: true,
-				description: 'HWID устройства для удаления',
+				description: 'HWID of the device to delete',
 				displayOptions: {
 					show: {
-						action: ['deleteHWID'],
+						resource: ['hwid'],
+						operation: ['deleteHWID'],
 					},
 				},
 			},
@@ -180,84 +241,123 @@ export class Remnawave implements INodeType {
 		};
 
 		for (let i = 0; i < items.length; i++) {
-			const action = this.getNodeParameter('action', i) as string;
+			const resource = this.getNodeParameter('resource', i) as string;
+			const operation = this.getNodeParameter('operation', i) as string;
 
 			let response;
 			let method: 'GET' | 'DELETE' | 'PATCH' | 'POST' = 'GET';
 			let body: object | undefined = undefined;
 			let url = '';
 
-			// Для обработки ошибок
-			let identifierType = '';
-			let identifierValue = '';
-
 			try {
-				if (action === 'createUser') {
-					method = 'POST';
-					const rawUpdateFields = this.getNodeParameter('updateFields', i, '{}');
-					const parsedUpdateFields = typeof rawUpdateFields === 'string'
-						? JSON.parse(rawUpdateFields)
-						: rawUpdateFields;
-					body = { ...parsedUpdateFields };
-					url = `${apiUrl}/users`;
+				if (resource === 'users') {
+					// ==================== Users Operations ====================
 
-				} else if (action === 'getUsers') {
-					method = 'GET';
-					url = `${apiUrl}/users`;
+					if (operation === 'createUser') {
+						method = 'POST';
+						const rawUserData = this.getNodeParameter('userData', i, '{}');
+						const parsedUserData = typeof rawUserData === 'string'
+							? JSON.parse(rawUserData)
+							: rawUserData;
+						body = { ...parsedUserData };
+						url = `${apiUrl}/users`;
 
-				} else if (action === 'checkUser') {
-					identifierType = this.getNodeParameter('identifierType', i) as string;
-					identifierValue = this.getNodeParameter('identifierValue', i) as string;
+					} else if (operation === 'updateUser') {
+						const userUuid = this.getNodeParameter('userUuid', i) as string;
+						method = 'PATCH';
+						url = `${apiUrl}/users/${userUuid}`;
 
-					url = identifierType === 'uuid'
-						? `${apiUrl}/users/${identifierValue}`
-						: `${apiUrl}/users/by-${identifierType}/${identifierValue}`;
+						const rawUpdateData = this.getNodeParameter('updateData', i, '{}');
+						const parsedUpdateData = typeof rawUpdateData === 'string'
+							? JSON.parse(rawUpdateData)
+							: rawUpdateData;
+						body = { ...parsedUpdateData };
 
-					method = 'GET';
+					} else if (operation === 'getAllUsers') {
+						method = 'GET';
+						const returnAll = this.getNodeParameter('returnAll', i, false) as boolean;
+						const start = this.getNodeParameter('start', i, 0) as number;
 
-				} else if (action === 'updateUser') {
-					const uuid = this.getNodeParameter('updateUuid', i) as string;
-					identifierValue = uuid;
+						const queryParams = new URLSearchParams();
+						queryParams.append('start', start.toString());
 
-					method = 'PATCH';
-					url = `${apiUrl}/users/${uuid}`;
+						if (!returnAll) {
+							const limit = this.getNodeParameter('limit', i, 50) as number;
+							queryParams.append('size', limit.toString());
+						}
 
-					const rawUpdateFields = this.getNodeParameter('updateFields', i, '{}');
-					const parsedUpdateFields = typeof rawUpdateFields === 'string'
-						? JSON.parse(rawUpdateFields)
-						: rawUpdateFields;
+						url = `${apiUrl}/users?${queryParams.toString()}`;
 
-					body = { ...parsedUpdateFields };
+					} else if (operation === 'deleteUser') {
+						const userUuid = this.getNodeParameter('userUuid', i) as string;
+						method = 'DELETE';
+						url = `${apiUrl}/users/${userUuid}`;
 
-				} else if (action === 'deleteUser') {
-					const uuid = this.getNodeParameter('deleteIdentifierValue', i) as string;
-					identifierValue = uuid;
+					} else if (operation === 'getUser') {
+						const userUuid = this.getNodeParameter('userUuid', i) as string;
+						method = 'GET';
+						url = `${apiUrl}/users/${userUuid}`;
 
-					method = 'DELETE';
-					url = `${apiUrl}/users/${uuid}`;
-				} else if (action === 'getHWID') {
-					method = 'GET';
-					const userUuid = this.getNodeParameter('userUuid', i) as string;
-					url = `${apiUrl}/hwid/devices/${userUuid}`;
+					} else if (operation === 'revokeSubscription') {
+						const userUuid = this.getNodeParameter('userUuid', i) as string;
+						method = 'POST';
+						url = `${apiUrl}/users/${userUuid}/actions/revoke`;
+						body = {};
 
-				} else if (action === 'deleteHWID') {
-					method = 'POST';
-					url = `${apiUrl}/hwid/devices/delete`;
+					} else if (operation === 'disableUser') {
+						const userUuid = this.getNodeParameter('userUuid', i) as string;
+						method = 'POST';
+						url = `${apiUrl}/users/${userUuid}/actions/disable`;
+						body = {};
 
-					const userUuid = this.getNodeParameter('userUuid', i) as string;
-					const hwid = this.getNodeParameter('hwid', i) as string;
+					} else if (operation === 'enableUser') {
+						const userUuid = this.getNodeParameter('userUuid', i) as string;
+						method = 'POST';
+						url = `${apiUrl}/users/${userUuid}/actions/enable`;
+						body = {};
 
-					body = { userUuid, hwid };
+					} else if (operation === 'resetTraffic') {
+						const userUuid = this.getNodeParameter('userUuid', i) as string;
+						method = 'POST';
+						url = `${apiUrl}/users/${userUuid}/actions/reset-traffic`;
+						body = {};
 
-				} else if (action === 'revokeSubscription') {
-					method = 'POST';
-					const uuid = this.getNodeParameter('revokeUuid', i) as string;
-					identifierValue = uuid;
-					url = `${apiUrl}/users/${uuid}/actions/revoke`;
-					body = {};
+					} else {
+						throw new Error(`Unknown users operation: ${operation}`);
+					}
+
+				} else if (resource === 'hwid') {
+					// ==================== HWID Operations ====================
+
+					if (operation === 'getUserHWID') {
+						const userUuid = this.getNodeParameter('userUuid', i) as string;
+						method = 'GET';
+						url = `${apiUrl}/hwid/devices/${userUuid}`;
+
+					} else if (operation === 'deleteHWID') {
+						const userUuid = this.getNodeParameter('userUuid', i) as string;
+						const hwid = this.getNodeParameter('hwid', i) as string;
+						method = 'POST';
+						url = `${apiUrl}/hwid/devices/delete`;
+						body = { userUuid, hwid };
+
+					} else if (operation === 'deleteAllUserHWID') {
+						const userUuid = this.getNodeParameter('userUuid', i) as string;
+						method = 'DELETE';
+						url = `${apiUrl}/hwid/devices/${userUuid}/all`;
+
+					} else if (operation === 'getAllHWID') {
+						method = 'GET';
+						url = `${apiUrl}/hwid/devices`;
+
+					} else {
+						throw new Error(`Unknown hwid operation: ${operation}`);
+					}
+
 				} else {
-				    throw new Error(`Unknown action: ${action}`);
+					throw new Error(`Unknown resource: ${resource}`);
 				}
+
 				response = await this.helpers.request({
 					method,
 					url,
@@ -265,27 +365,22 @@ export class Remnawave implements INodeType {
 					body,
 					json: true,
 				});
+
 			} catch (error: any) {
-				// Обработка ошибок 404 по каждому действию
 				if (error.statusCode === 404) {
-					if (action === 'checkUser') {
-						throw new Error(`User not found with ${identifierType}: ${identifierValue}`);
-					} else if (action === 'updateUser' || action === 'deleteUser' || action === 'revokeSubscription') {
-						throw new Error(`User not found with UUID: ${identifierValue}`);
-					}
+					throw new Error(`Resource not found: ${error.message || 'Not Found'}`);
 				}
 
-				// Общая ошибка
 				throw new Error(`API Error: ${error.message || error}`);
 			}
 
-			if (action === 'getHWID' && response.response && response.response.devices) {
+			if (operation === 'getUserHWID' && response.response && response.response.devices) {
 				returnData.push({ json: response.response.devices });
 			} else {
 				returnData.push({ json: response });
 			}
 		}
-	return [returnData];
+		return [returnData];
 	}
 }
 
