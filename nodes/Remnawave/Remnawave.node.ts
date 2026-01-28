@@ -162,7 +162,7 @@ export class Remnawave implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['users'],
-						operation: ['updateUser', 'deleteUser', 'revokeSubscription', 'disableUser', 'enableUser', 'resetTraffic'],
+						operation: ['deleteUser', 'revokeSubscription', 'disableUser', 'enableUser', 'resetTraffic'],
 					},
 				},
 			},
