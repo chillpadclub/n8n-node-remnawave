@@ -12,7 +12,7 @@ export class Remnawave implements INodeType {
 		name: 'remnawave',
 		group: ['transform'],
 		version: 1,
-		icon: 'file:remnawave.png',
+		icon: 'file:Remnawave.node.png',
 		description: 'Interact with the Remnawave API',
 		defaults: {
 			name: 'Remnawave',
