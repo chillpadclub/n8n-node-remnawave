@@ -320,9 +320,13 @@ export class Remnawave implements INodeType {
 						url = `${apiUrl}/users`;
 
 					} else if (operation === 'updateUser') {
-						const userUuid = this.getNodeParameter('userUuid', i) as string;
+						const identifierType = this.getNodeParameter('identifierType', i) as string;
+						const identifierValue = this.getNodeParameter('identifierValue', i) as string;
+
 						method = 'PATCH';
-						url = `${apiUrl}/users/${userUuid}`;
+						url = identifierType === 'uuid'
+							? `${apiUrl}/users/${identifierValue}`
+							: `${apiUrl}/users/by-${identifierType}/${identifierValue}`;
 
 						const rawUpdateData = this.getNodeParameter('updateData', i, '{}');
 						const parsedUpdateData = typeof rawUpdateData === 'string'
