@@ -111,7 +111,7 @@ export class Remnawave implements INodeType {
 		},
 		options: [
 			{ name: 'Encrypt Link (Crypt3)', value: 'encryptHappLinkFromRW', description: 'Encrypt Happ link using Remnawave API (Crypt3)' },
-		{ name: 'Encrypt Link (Crypt5)', value: 'encryptHappLinkFromHapp', description: 'Encrypt Happ link directly via Happ API (Crypt5)' },
+			{ name: 'Encrypt Link (Crypt5)', value: 'encryptHappLinkFromHapp', description: 'Encrypt Happ link directly via Happ API (Crypt5)' },
 		],
 		default: 'encryptHappLinkFromRW',
 		required: true,
@@ -190,34 +190,34 @@ export class Remnawave implements INodeType {
 					},
 				},
 			},
-		// Revoke Only Passwords - for revokeSubscription
-		{
-			displayName: 'Revoke Only Passwords',
-			name: 'revokeOnlyPasswords',
-			type: 'boolean',
-			default: false,
-			description: 'Whether to revoke only passwords or the entire subscription',
-			displayOptions: {
-				show: {
-					resource: ['users'],
-					operation: ['revokeSubscription'],
+			// Revoke Only Passwords - for revokeSubscription
+			{
+				displayName: 'Revoke Only Passwords',
+				name: 'revokeOnlyPasswords',
+				type: 'boolean',
+				default: false,
+				description: 'Whether to revoke only passwords or the entire subscription',
+				displayOptions: {
+					show: {
+						resource: ['users'],
+						operation: ['revokeSubscription'],
+					},
 				},
 			},
-		},
-n		// Short UUID - for revokeSubscription
-		{
-			displayName: 'Short UUID',
-			name: 'shortUuid',
-			type: 'string',
-			default: '',
-			description: 'Optional short UUID for revoke operation',
-			displayOptions: {
-				show: {
-					resource: ['users'],
-					operation: ['revokeSubscription'],
+			// Short UUID - for revokeSubscription
+			{
+				displayName: 'Short UUID',
+				name: 'shortUuid',
+				type: 'string',
+				default: '',
+				description: 'Optional short UUID for revoke operation',
+				displayOptions: {
+					show: {
+						resource: ['users'],
+						operation: ['revokeSubscription'],
+					},
 				},
 			},
-		},
 
 			// User Data - for createUser
 			{
