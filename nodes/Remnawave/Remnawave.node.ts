@@ -61,15 +61,15 @@ export class Remnawave implements INodeType {
 					},
 				},
 				options: [
-					{ name: 'createUser', value: 'createUser' },
-					{ name: 'updateUser', value: 'updateUser' },
-					{ name: 'getAllUsers', value: 'getAllUsers' },
-					{ name: 'deleteUser', value: 'deleteUser' },
-					{ name: 'getUser', value: 'getUser' },
-					{ name: 'revokeSubscription', value: 'revokeSubscription' },
-					{ name: 'disableUser', value: 'disableUser' },
-					{ name: 'enableUser', value: 'enableUser' },
-					{ name: 'resetTraffic', value: 'resetTraffic' },
+					{ name: 'Create User', value: 'createUser' },
+					{ name: 'Update User', value: 'updateUser' },
+					{ name: 'Get All Users', value: 'getAllUsers' },
+					{ name: 'Delete User', value: 'deleteUser' },
+					{ name: 'Get User', value: 'getUser' },
+					{ name: 'Revoke Subscription', value: 'revokeSubscription' },
+					{ name: 'Disable User', value: 'disableUser' },
+					{ name: 'Enable User', value: 'enableUser' },
+					{ name: 'Reset Traffic', value: 'resetTraffic' },
 				],
 				default: 'createUser',
 				required: true,
@@ -87,11 +87,11 @@ export class Remnawave implements INodeType {
 					},
 				},
 				options: [
-					{ name: 'createUserHWID', value: 'createUserHWID' },
-					{ name: 'getUserHWID', value: 'getUserHWID' },
-					{ name: 'deleteHWID', value: 'deleteHWID' },
-					{ name: 'deleteAllUserHWID', value: 'deleteAllUserHWID' },
-					{ name: 'getAllHWID', value: 'getAllHWID' },
+					{ name: 'Create User HWID', value: 'createUserHWID' },
+					{ name: 'Get User HWID', value: 'getUserHWID' },
+					{ name: 'Delete HWID', value: 'deleteHWID' },
+					{ name: 'Delete All User HWID', value: 'deleteAllUserHWID' },
+					{ name: 'Get All HWID', value: 'getAllHWID' },
 				],
 				default: 'createUserHWID',
 				required: true,
@@ -110,8 +110,8 @@ export class Remnawave implements INodeType {
 			},
 		},
 		options: [
-			{ name: 'encryptHappLinkFromRW', value: 'encryptHappLinkFromRW', description: 'Encrypt Happ link using Remnawave API (Crypt3)' },
-		{ name: 'encryptHappLinkFromHapp', value: 'encryptHappLinkFromHapp', description: 'Encrypt Happ link directly via Happ API (Crypt5)' },
+			{ name: 'Encrypt Link (Crypt3)', value: 'encryptHappLinkFromRW', description: 'Encrypt Happ link using Remnawave API (Crypt3)' },
+		{ name: 'Encrypt Link (Crypt5)', value: 'encryptHappLinkFromHapp', description: 'Encrypt Happ link directly via Happ API (Crypt5)' },
 		],
 		default: 'encryptHappLinkFromRW',
 		required: true,
@@ -190,6 +190,34 @@ export class Remnawave implements INodeType {
 					},
 				},
 			},
+		// Revoke Only Passwords - for revokeSubscription
+		{
+			displayName: 'Revoke Only Passwords',
+			name: 'revokeOnlyPasswords',
+			type: 'boolean',
+			default: false,
+			description: 'Whether to revoke only passwords or the entire subscription',
+			displayOptions: {
+				show: {
+					resource: ['users'],
+					operation: ['revokeSubscription'],
+				},
+			},
+		},
+n		// Short UUID - for revokeSubscription
+		{
+			displayName: 'Short UUID',
+			name: 'shortUuid',
+			type: 'string',
+			default: '',
+			description: 'Optional short UUID for revoke operation',
+			displayOptions: {
+				show: {
+					resource: ['users'],
+					operation: ['revokeSubscription'],
+				},
+			},
+		},
 
 			// User Data - for createUser
 			{
@@ -467,9 +495,14 @@ export class Remnawave implements INodeType {
 
 					} else if (operation === 'revokeSubscription') {
 						const userUuid = this.getNodeParameter('userUuid', i) as string;
+					const revokeOnlyPasswords = this.getNodeParameter('revokeOnlyPasswords', i, false) as boolean;
+					const shortUuid = this.getNodeParameter('shortUuid', i, '') as string;
 						method = 'POST';
 						url = `${apiUrl}/users/${userUuid}/actions/revoke`;
-						body = {};
+					body = {
+						revokeOnlyPasswords,
+						...(shortUuid ? { shortUuid } : {}),
+					};
 
 					} else if (operation === 'disableUser') {
 						const userUuid = this.getNodeParameter('userUuid', i) as string;
