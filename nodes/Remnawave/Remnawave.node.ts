@@ -190,33 +190,35 @@ export class Remnawave implements INodeType {
 					},
 				},
 			},
-			// Revoke Only Passwords - for revokeSubscription
+			// Additional Fields - for revokeSubscription
 			{
-				displayName: 'Revoke Only Passwords',
-				name: 'revokeOnlyPasswords',
-				type: 'boolean',
-				default: false,
-				description: 'Whether to revoke only passwords or the entire subscription',
+				displayName: 'Additional Fields',
+				name: 'additionalFields',
+				type: 'collection',
+				placeholder: 'Add Field',
+				default: {},
 				displayOptions: {
 					show: {
 						resource: ['users'],
 						operation: ['revokeSubscription'],
 					},
 				},
-			},
-			// Short UUID - for revokeSubscription
-			{
-				displayName: 'Short UUID',
-				name: 'shortUuid',
-				type: 'string',
-				default: '',
-				description: 'Optional short UUID for revoke operation',
-				displayOptions: {
-					show: {
-						resource: ['users'],
-						operation: ['revokeSubscription'],
+				options: [
+					{
+						displayName: 'Revoke Only Passwords',
+						name: 'revokeOnlyPasswords',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to revoke only passwords or the entire subscription',
 					},
-				},
+					{
+						displayName: 'Short UUID',
+						name: 'shortUuid',
+						type: 'string',
+						default: '',
+						description: 'Optional short UUID for revoke operation',
+					},
+				],
 			},
 
 			// User Data - for createUser
@@ -495,8 +497,9 @@ export class Remnawave implements INodeType {
 
 					} else if (operation === 'revokeSubscription') {
 						const userUuid = this.getNodeParameter('userUuid', i) as string;
-					const revokeOnlyPasswords = this.getNodeParameter('revokeOnlyPasswords', i, false) as boolean;
-					const shortUuid = this.getNodeParameter('shortUuid', i, '') as string;
+						const additionalFields = this.getNodeParameter('additionalFields', i, {}) as any;
+						const revokeOnlyPasswords = additionalFields.revokeOnlyPasswords || false;
+						const shortUuid = additionalFields.shortUuid || '';
 						method = 'POST';
 						url = `${apiUrl}/users/${userUuid}/actions/revoke`;
 					body = {
