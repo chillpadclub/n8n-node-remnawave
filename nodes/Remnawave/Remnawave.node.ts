@@ -219,7 +219,7 @@ export class Remnawave implements INodeType {
 				},
 			},
 
-n		// Update Data - for updateUser
+		// Update Data - for updateUser
 		{
 			displayName: 'Update Data',
 			name: 'updateData',
