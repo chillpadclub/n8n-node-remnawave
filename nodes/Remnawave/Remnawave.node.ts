@@ -140,24 +140,6 @@ export class Remnawave implements INodeType {
 				},
 			},
 
-			// Identifier Type - for updateUser
-			{
-				displayName: 'Identifier Type',
-				name: 'identifierType',
-				type: 'options',
-				options: [
-					{ name: 'UUID', value: 'uuid' },
-					{ name: 'Username', value: 'username' },
-				],
-				default: 'uuid',
-				description: 'Type of identifier to use for locating the user',
-				displayOptions: {
-					show: {
-						resource: ['users'],
-						operation: ['updateUser'],
-					},
-				},
-			},
 
 			// Identifier Value - for getUser
 			{
@@ -170,7 +152,7 @@ export class Remnawave implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['users'],
-						operation: ['getUser', 'updateUser'],
+						operation: ['getUser'],
 					},
 				},
 			},
@@ -237,21 +219,21 @@ export class Remnawave implements INodeType {
 				},
 			},
 
-			// Update Data - for updateUser
-			{
-				displayName: 'Update Data',
-				name: 'updateData',
-				type: 'json',
-				default: '{}',
-				required: true,
-				description: 'JSON object with user fields to update',
-				displayOptions: {
-					show: {
-						resource: ['users'],
-						operation: ['updateUser'],
-					},
+n		// Update Data - for updateUser
+		{
+			displayName: 'Update Data',
+			name: 'updateData',
+			type: 'json',
+			default: '{}',
+			required: true,
+			description: 'JSON object with user fields to update (must include uuid or username)',
+			displayOptions: {
+				show: {
+					resource: ['users'],
+					operation: ['updateUser'],
 				},
 			},
+		},
 
 			// Pagination - for getAllUsers
 			{
@@ -452,20 +434,15 @@ export class Remnawave implements INodeType {
 						url = `${apiUrl}/users`;
 
 					} else if (operation === 'updateUser') {
-						const identifierType = this.getNodeParameter('identifierType', i) as string;
-						const identifierValue = this.getNodeParameter('identifierValue', i) as string;
 
 						method = 'PATCH';
-					url = `${apiUrl}/users`;
+						url = `${apiUrl}/users`;
 
 						const rawUpdateData = this.getNodeParameter('updateData', i, '{}');
 						const parsedUpdateData = typeof rawUpdateData === 'string'
 							? JSON.parse(rawUpdateData)
 							: rawUpdateData;
-					body = {
-							...(identifierType === 'uuid' ? { uuid: identifierValue } : { username: identifierValue }),
-							...parsedUpdateData,
-						};
+					body = { ...parsedUpdateData };
 
 					} else if (operation === 'getAllUsers') {
 						method = 'GET';
