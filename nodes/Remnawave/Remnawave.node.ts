@@ -456,15 +456,16 @@ export class Remnawave implements INodeType {
 						const identifierValue = this.getNodeParameter('identifierValue', i) as string;
 
 						method = 'PATCH';
-						url = identifierType === 'uuid'
-							? `${apiUrl}/users/${identifierValue}`
-							: `${apiUrl}/users/by-${identifierType}/${identifierValue}`;
+					url = `${apiUrl}/users`;
 
 						const rawUpdateData = this.getNodeParameter('updateData', i, '{}');
 						const parsedUpdateData = typeof rawUpdateData === 'string'
 							? JSON.parse(rawUpdateData)
 							: rawUpdateData;
-						body = { ...parsedUpdateData };
+					body = {
+							...(identifierType === 'uuid' ? { uuid: identifierValue } : { username: identifierValue }),
+							...parsedUpdateData,
+						};
 
 					} else if (operation === 'getAllUsers') {
 						method = 'GET';
